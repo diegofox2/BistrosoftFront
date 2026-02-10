@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { API_BASE_URL } from "../config";
 import { useAuthStore } from "../stores/authStore";
 
+const router = useRouter();
 const authStore = useAuthStore();
 
 const statusLabel = computed(() =>
@@ -10,6 +12,11 @@ const statusLabel = computed(() =>
     ? `Connected as ${authStore.username || "user"}`
     : "Not authenticated",
 );
+
+const logout = async () => {
+  authStore.logout();
+  await router.replace({ name: "login" });
+};
 </script>
 
 <template>
@@ -38,6 +45,14 @@ const statusLabel = computed(() =>
           <div class="mt-6 flex flex-wrap items-center gap-3">
             <span class="ui-badge">API: {{ API_BASE_URL }}</span>
             <span class="ui-badge">{{ statusLabel }}</span>
+            <button
+              v-if="authStore.isAuthenticated"
+              @click="logout"
+              class="ui-button-ghost"
+              type="button"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
