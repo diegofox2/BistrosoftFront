@@ -61,6 +61,7 @@ src/
 ## 🎯 Beneficios de la Arquitectura
 
 ### 1. **Escalabilidad sin Límites**
+
 Cada módulo es completamente autocontenido. Puedes tener 5, 50 o 500 módulos sin que la estructura se vuelva inmanejable.
 
 ```typescript
@@ -76,6 +77,7 @@ modules/
 ```
 
 ### 2. **Cohesión por Dominio**
+
 Todo lo relacionado con un dominio de negocio está en un solo lugar:
 
 ```
@@ -89,6 +91,7 @@ modules/customers/
 No más buscar archivos dispersos en 10 carpetas diferentes.
 
 ### 3. **Lazy Loading Automático**
+
 Los módulos se cargan bajo demanda, mejorando significativamente el tiempo de carga inicial:
 
 ```typescript
@@ -102,31 +105,36 @@ Los módulos se cargan bajo demanda, mejorando significativamente el tiempo de c
 **Resultado**: Bundle inicial más pequeño, app más rápida.
 
 ### 4. **Path Aliases Configurados**
+
 Imports limpios y mantenibles:
 
 ```typescript
 // ❌ Antes:
-import { useAuthStore } from '../../../stores/authStore'
+import { useAuthStore } from "../../../stores/authStore";
 
 // ✅ Ahora:
-import { useAuthStore } from '@modules/auth/stores/authStore'
+import { useAuthStore } from "@modules/auth/stores/authStore";
 ```
 
 Alias disponibles:
+
 - `@/*` → `./src/*`
 - `@core/*` → `./src/core/*`
 - `@modules/*` → `./src/modules/*`
 
 ### 5. **Testing Independiente**
+
 Cada módulo puede testearse de forma aislada sin dependencias externas innecesarias.
 
 ### 6. **Desarrollo en Paralelo**
+
 Múltiples equipos pueden trabajar en diferentes módulos sin conflictos de merge constantes.
 
 ## 🔧 Instalación y Configuración
 
 ### Prerrequisitos
-- Node.js 18+ 
+
+- Node.js 18+
 - npm o pnpm
 
 ### Instalación
@@ -189,25 +197,25 @@ src/modules/nuevo-modulo/
 `src/modules/nuevo-modulo/router.ts`:
 
 ```typescript
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from "vue-router";
 
 const nuevoModuloRoutes: RouteRecordRaw[] = [
   {
-    path: '/nuevo-modulo',
-    name: 'nuevo-modulo',
-    component: () => import('./views/NuevoModuloView.vue'),
+    path: "/nuevo-modulo",
+    name: "nuevo-modulo",
+    component: () => import("./views/NuevoModuloView.vue"),
     meta: {
       requiresAuth: true, // Si requiere autenticación
     },
   },
   {
-    path: '/nuevo-modulo/:id',
-    name: 'nuevo-modulo-detail',
-    component: () => import('./views/NuevoModuloDetail.vue'),
+    path: "/nuevo-modulo/:id",
+    name: "nuevo-modulo-detail",
+    component: () => import("./views/NuevoModuloDetail.vue"),
   },
-]
+];
 
-export default nuevoModuloRoutes
+export default nuevoModuloRoutes;
 ```
 
 #### 3. Registrar las Rutas en el Router Principal
@@ -215,16 +223,16 @@ export default nuevoModuloRoutes
 `src/core/router/index.ts`:
 
 ```typescript
-import nuevoModuloRoutes from '@modules/nuevo-modulo/router'
+import nuevoModuloRoutes from "@modules/nuevo-modulo/router";
 
 const routes = [
   ...authRoutes,
   ...dashboardRoutes,
   ...customerRoutes,
   ...orderRoutes,
-  ...nuevoModuloRoutes,  // ← Agregar aquí
+  ...nuevoModuloRoutes, // ← Agregar aquí
   // ...
-]
+];
 ```
 
 #### 4. Crear Servicios (si requiere API)
@@ -232,18 +240,18 @@ const routes = [
 `src/modules/nuevo-modulo/services/nuevoModuloService.ts`:
 
 ```typescript
-import { requestJson } from '@core/services/http'
-import type { NuevoModuloData, NuevoModuloResponse } from '../types'
+import { requestJson } from "@core/services/http";
+import type { NuevoModuloData, NuevoModuloResponse } from "../types";
 
 export const getNuevoModulo = async (token: string, id: string) =>
-  requestJson<NuevoModuloResponse>(`/api/NuevoModulo/${id}`, { token })
+  requestJson<NuevoModuloResponse>(`/api/NuevoModulo/${id}`, { token });
 
 export const createNuevoModulo = async (token: string, data: NuevoModuloData) =>
-  requestJson<NuevoModuloResponse>('/api/NuevoModulo', {
-    method: 'POST',
+  requestJson<NuevoModuloResponse>("/api/NuevoModulo", {
+    method: "POST",
     body: data,
     token,
-  })
+  });
 ```
 
 #### 5. Crear Store (si requiere estado)
@@ -251,33 +259,33 @@ export const createNuevoModulo = async (token: string, data: NuevoModuloData) =>
 `src/modules/nuevo-modulo/stores/nuevoModuloStore.ts`:
 
 ```typescript
-import { defineStore } from 'pinia'
-import type { NuevoModuloState } from '../types'
+import { defineStore } from "pinia";
+import type { NuevoModuloState } from "../types";
 
-export const useNuevoModuloStore = defineStore('nuevoModulo', {
+export const useNuevoModuloStore = defineStore("nuevoModulo", {
   state: (): NuevoModuloState => ({
     items: [],
     loading: false,
     error: null,
   }),
-  
+
   getters: {
     itemCount: (state) => state.items.length,
   },
-  
+
   actions: {
     async fetchItems() {
-      this.loading = true
+      this.loading = true;
       try {
         // Lógica de fetch...
       } catch (error) {
-        this.error = error instanceof Error ? error.message : 'Error'
+        this.error = error instanceof Error ? error.message : "Error";
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
   },
-})
+});
 ```
 
 #### 6. Definir Types
@@ -286,19 +294,19 @@ export const useNuevoModuloStore = defineStore('nuevoModulo', {
 
 ```typescript
 export interface NuevoModuloData {
-  name: string
-  description: string
+  name: string;
+  description: string;
 }
 
 export interface NuevoModuloResponse extends NuevoModuloData {
-  id: string
-  createdAt: string
+  id: string;
+  createdAt: string;
 }
 
 export interface NuevoModuloState {
-  items: NuevoModuloResponse[]
-  loading: boolean
-  error: string | null
+  items: NuevoModuloResponse[];
+  loading: boolean;
+  error: string | null;
 }
 ```
 
@@ -308,15 +316,15 @@ export interface NuevoModuloState {
 
 ```vue
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useNuevoModuloStore } from '../stores/nuevoModuloStore'
-import SectionCard from '@core/components/SectionCard.vue'
+import { onMounted } from "vue";
+import { useNuevoModuloStore } from "../stores/nuevoModuloStore";
+import SectionCard from "@core/components/SectionCard.vue";
 
-const store = useNuevoModuloStore()
+const store = useNuevoModuloStore();
 
 onMounted(() => {
-  store.fetchItems()
-})
+  store.fetchItems();
+});
 </script>
 
 <template>
@@ -372,38 +380,36 @@ El proyecto implementa guards de navegación para proteger rutas:
 ```typescript
 // core/router/index.ts
 router.beforeEach((to) => {
-  const authStore = useAuthStore(pinia)
-  
+  const authStore = useAuthStore(pinia);
+
   // Redirigir a login si no está autenticado
-  if (!authStore.isAuthenticated && to.name !== 'login') {
-    return { name: 'login', query: { redirect: to.fullPath } }
+  if (!authStore.isAuthenticated && to.name !== "login") {
+    return { name: "login", query: { redirect: to.fullPath } };
   }
-  
+
   // Redirigir a dashboard si ya está autenticado
-  if (authStore.isAuthenticated && to.name === 'login') {
-    return { name: 'dashboard' }
+  if (authStore.isAuthenticated && to.name === "login") {
+    return { name: "dashboard" };
   }
-  
-  return true
-})
+
+  return true;
+});
 ```
 
 ## 🎨 Componentes Core Disponibles
 
 ### SectionCard
+
 Wrapper consistente para secciones de contenido:
 
 ```vue
-<SectionCard 
-  title="Mi Sección" 
-  subtitle="Descripción opcional"
-  badge="Label"
->
+<SectionCard title="Mi Sección" subtitle="Descripción opcional" badge="Label">
   <!-- Contenido -->
 </SectionCard>
 ```
 
 ### StatusPill
+
 Indicador visual de estado (usado en órdenes):
 
 ```vue
